@@ -1,0 +1,57 @@
+<craft>
+<parameter name="pinStepX" type="float"/>
+<parameter name="pinStepY" type="float"/>
+<parameter name="musicH" type="float"/>
+<parameter name="epsilonCSG" type="float" default="0.1"/>
+<parameter name="wall" type="int" default="2"/>
+<parameter name="pinNrX" type="int" default="13"/>
+<parameter name="pinNrY" type="int" default="35"/>
+<parameter name="pinD" type="float" default="1.5"/>
+<parameter name="pinH" type="int" default="3"/>
+<parameter name="teethGap" type="int"/>
+<parameter name="extra" type="float"/>
+<parameter name="h" type="float" default="0"/>
+<parameter name="mirr" type="int" default="0"/>
+<parameter name="musicCylinderTeeth" type="int" default="24"/>
+<parameter name="snapAxisSlack" type="float" default="0.35"/>
+<parameter name="diametral_pitch" type="float" default="0.6"/>
+<parameter name="gear_min_gap" type="float" default="0.1"/>
+<parameter name="gear_hold_R" type="int" default="4"/>
+
+
+<script type="text/openjscad">
+
+function main(params)
+{
+ 	params.teethGap=params.pinH
+ 	var musicH=params.pinNrX*(params.wall+params.teethGap)
+ 	params.pinStepX=musicH/params.pinNrX
+ 	params.pinStepY=360/params.pinNrY;
+ 	var musicCylinderR=(params.musicCylinderTeeth/params.diametral_pitch)/2;
+ 	params.extra=params.epsilonCSG;
+ 	var pins= "XoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooX";
+  var p= Pin(params.pinStepX,params.pinD,params.pinH,params.teethGap);
+  var m=MyAxisSnapCutout(params.h,params.mirr,params.extra);
+ 	return m;
+}
+function Pin(pinStepX,pinD,pinH,teethGap)
+{
+	var c1= cube([pinStepX+4*teethGap,pinD,2*(pinH+0.15)],center=false).translate([-pinStepX/2,-pinD/2,-pinH/2]);
+	var c2= cube([8*pinStepX,8*pinStepX,8*pinStepX],center=true).translate([4*pinStepX,0,0]).rotateY(-35).translate([pinStepX/2,0,0]);
+	var pin1=difference(c1,c2);
+	return pin1;
+}
+function MyAxisSnapCutout(h,mirr,extra)
+{
+  var height=h+extra+params.snapAxisSlack;
+  var rad1=h+extra+params.snapAxisSlack;
+  var c1=cylinder({r1:rad1, r2:0,h:height, center:false}).translate([0,0,-extra]);
+  var c2=c1.mirroredZ().translate([0,0,0]);
+  return c2;
+}
+function MyAxisSnapHolder(h,extra)
+{
+    
+}
+</script>
+</craft>
